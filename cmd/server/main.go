@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"go-flight-tracker/internal/config"
 	"go-flight-tracker/internal/flight"
 	"log"
 	"net/http"
@@ -12,6 +13,11 @@ import (
 )
 
 func main() {
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("failed to load config: %v", err)
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -19,8 +25,8 @@ func main() {
 		Timeout: 10 * time.Second,
 	}
 
-	client := flight.NewClient(httpClient, "https://opensky-network.org/api")
-	poller := flight.NewPoller(client, 10*time.Second)
+	client := flight.NewClient(httpClient, cfg)
+	poller := flight.NewPoller(client, cfg.PollerInterval)
 
 	go poller.Start(ctx)
 
