@@ -36,17 +36,9 @@ func main() {
 		select {
 		case aircrafts, ok := <-poller.Output():
 			if !ok {
-				// Canal foi fechado
 				return
 			}
 			log.Printf("Received update: %d active aircrafts in radar\n", len(aircrafts))
-
-			// Se quiser ver dados de alguma aeronave:
-			if len(aircrafts) > 0 {
-				a := aircrafts[0]
-				log.Printf("   -> Exemplo: ICAO24: %s | Callsign: %s | País: %s | Altura: %.2fm\n",
-					a.Icao24, a.Callsign, a.OriginCountry, a.BaroAltitude)
-			}
 
 		case <-ctx.Done():
 			log.Println("Sinal de encerramento recebido. Finalizando aplicação graciosamente...")

@@ -215,7 +215,7 @@ go-flight-tracker/
 ## Roadmap
 
 - [x] Bootstrap gqlgen + `net/http`
-- [ ] Poller OpenSky com ticker e context
+- [x] Poller OpenSky com ticker e context
 - [ ] State manager concorrente (`sync.RWMutex`)
 - [ ] Integração Redis Pub/Sub + cache
 - [ ] GraphQL Subscriptions via WebSocket
@@ -444,7 +444,7 @@ go-flight-tracker/
 ## Roadmap
 
 - [x] gqlgen + `net/http` bootstrap
-- [ ] OpenSky poller with ticker and context
+- [x] OpenSky poller with ticker and context
 - [ ] Concurrent state manager (`sync.RWMutex`)
 - [ ] Redis Pub/Sub + cache integration
 - [ ] GraphQL Subscriptions over WebSocket

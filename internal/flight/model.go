@@ -48,7 +48,7 @@ func ParseOpenSkyResponse(resp *OpenSkyResponse) []*Aircraft {
 
 // parseStateVector converte um vetor da matriz OpenSky ([]interface{}) para Aircraft
 func parseStateVector(vector []interface{}) *Aircraft {
-	if len(vector) < 18 {
+	if len(vector) < 17 {
 		return nil
 	}
 
@@ -160,8 +160,8 @@ func parseStateVector(vector []interface{}) *Aircraft {
 		}
 	}
 
-	// [17] category (int)
-	if vector[17] != nil {
+	// [17] category (int) — only present when extended=1
+	if len(vector) > 17 && vector[17] != nil {
 		if val, ok := vector[17].(float64); ok {
 			a.Category = int(val)
 		}
