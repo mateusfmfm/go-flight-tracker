@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-flight-tracker/internal/config"
 	"go-flight-tracker/internal/flight"
+	"go-flight-tracker/internal/store"
 	"log"
 	"net/http"
 	"os"
@@ -28,6 +29,8 @@ func main() {
 	client := flight.NewClient(httpClient, cfg)
 	poller := flight.NewPoller(client, cfg.PollerInterval)
 
+	aircraftStore := store.NewAircraftStore()
+
 	go poller.Start(ctx)
 
 	log.Println("Server started! Waiting for data from OpenSky (Press Ctrl+C to exit)...")
@@ -38,7 +41,17 @@ func main() {
 			if !ok {
 				return
 			}
-			log.Printf("Received update: %d active aircrafts in radar\n", len(aircrafts))
+			aircraftStore.Update(aircrafts)
+
+			stored := aircraftStore.GetAll()
+			log.Printf("Received update: %d aircrafts from API | Total active in memory store: %d\n",
+				len(aircrafts), len(stored))
+
+			if len(stored) > 0 {
+				a := stored[0]
+				log.Printf("   -> Store sample: ICAO24: %s | Callsign: %s | Alt: %.2fm\n",
+					a.Icao24, a.Callsign, a.BaroAltitude)
+			}
 
 		case <-ctx.Done():
 			log.Println("Sinal de encerramento recebido. Finalizando aplicação graciosamente...")
