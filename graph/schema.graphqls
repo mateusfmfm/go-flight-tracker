@@ -1,28 +1,38 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+type Aircraft {
+  icao24: String!
+  callsign: String!
+  originCountry: String!
+  longitude: Float
+  latitude: Float
+  baroAltitude: Float
+  onGround: Boolean!
+  velocity: Float
+  trueTrack: Float
+  verticalRate: Float
+  squawk: String
+  spi: Boolean!
+  positionSource: Int!
+  category: Int!
+  lastPositionUpdate: Int
+  lastContact: Int
+}
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-} 
-
-type User {
-  id: ID!
-  name: String!
+input FlightFilter {
+  originCountry: String
+  minAltitude: Float
+  maxAltitude: Float
+  callsignPrefix: String
 }
 
 type Query {
-  todos: [Todo!]!
+  #Map search
+  aircrafts: [Aircraft!]!
+  
+  #Search for a specific aircraft by ICAO24
+  aircraft(icao24: String!): Aircraft
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
-}
-
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
+type Subscription {
+  #Subscribe to flight updates
+  flightUpdated(filter: FlightFilter): [Aircraft!]!
 }

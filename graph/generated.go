@@ -29,32 +29,40 @@ func NewExecutableSchema(cfg Config) graphql.ExecutableSchema {
 type Config = graphql.Config[ResolverRoot, DirectiveRoot, ComplexityRoot]
 
 type ResolverRoot interface {
-	Mutation() MutationResolver
 	Query() QueryResolver
+	Subscription() SubscriptionResolver
 }
 
 type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
-	Mutation struct {
-		CreateTodo func(childComplexity int, input model.NewTodo) int
+	Aircraft struct {
+		BaroAltitude       func(childComplexity int) int
+		Callsign           func(childComplexity int) int
+		Category           func(childComplexity int) int
+		Icao24             func(childComplexity int) int
+		LastContact        func(childComplexity int) int
+		LastPositionUpdate func(childComplexity int) int
+		Latitude           func(childComplexity int) int
+		Longitude          func(childComplexity int) int
+		OnGround           func(childComplexity int) int
+		OriginCountry      func(childComplexity int) int
+		PositionSource     func(childComplexity int) int
+		Spi                func(childComplexity int) int
+		Squawk             func(childComplexity int) int
+		TrueTrack          func(childComplexity int) int
+		Velocity           func(childComplexity int) int
+		VerticalRate       func(childComplexity int) int
 	}
 
 	Query struct {
-		Todos func(childComplexity int) int
+		Aircraft  func(childComplexity int, icao24 string) int
+		Aircrafts func(childComplexity int) int
 	}
 
-	Todo struct {
-		Done func(childComplexity int) int
-		ID   func(childComplexity int) int
-		Text func(childComplexity int) int
-		User func(childComplexity int) int
-	}
-
-	User struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+	Subscription struct {
+		FlightUpdated func(childComplexity int, filter *model.FlightFilter) int
 	}
 }
 
@@ -62,11 +70,12 @@ type ComplexityRoot struct {
 
 // region    ************************** generated!.gotpl **************************
 
-type MutationResolver interface {
-	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
-}
 type QueryResolver interface {
-	Todos(ctx context.Context) ([]*model.Todo, error)
+	Aircrafts(ctx context.Context) ([]*model.Aircraft, error)
+	Aircraft(ctx context.Context, icao24 string) (*model.Aircraft, error)
+}
+type SubscriptionResolver interface {
+	FlightUpdated(ctx context.Context, filter *model.FlightFilter) (<-chan []*model.Aircraft, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -87,62 +96,132 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Mutation.createTodo":
-		if e.ComplexityRoot.Mutation.CreateTodo == nil {
+	case "Aircraft.baroAltitude":
+		if e.ComplexityRoot.Aircraft.BaroAltitude == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createTodo_args(ctx, rawArgs)
+		return e.ComplexityRoot.Aircraft.BaroAltitude(childComplexity), true
+	case "Aircraft.callsign":
+		if e.ComplexityRoot.Aircraft.Callsign == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Callsign(childComplexity), true
+	case "Aircraft.category":
+		if e.ComplexityRoot.Aircraft.Category == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Category(childComplexity), true
+	case "Aircraft.icao24":
+		if e.ComplexityRoot.Aircraft.Icao24 == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Icao24(childComplexity), true
+	case "Aircraft.lastContact":
+		if e.ComplexityRoot.Aircraft.LastContact == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.LastContact(childComplexity), true
+	case "Aircraft.lastPositionUpdate":
+		if e.ComplexityRoot.Aircraft.LastPositionUpdate == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.LastPositionUpdate(childComplexity), true
+	case "Aircraft.latitude":
+		if e.ComplexityRoot.Aircraft.Latitude == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Latitude(childComplexity), true
+	case "Aircraft.longitude":
+		if e.ComplexityRoot.Aircraft.Longitude == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Longitude(childComplexity), true
+	case "Aircraft.onGround":
+		if e.ComplexityRoot.Aircraft.OnGround == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.OnGround(childComplexity), true
+	case "Aircraft.originCountry":
+		if e.ComplexityRoot.Aircraft.OriginCountry == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.OriginCountry(childComplexity), true
+	case "Aircraft.positionSource":
+		if e.ComplexityRoot.Aircraft.PositionSource == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.PositionSource(childComplexity), true
+	case "Aircraft.spi":
+		if e.ComplexityRoot.Aircraft.Spi == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Spi(childComplexity), true
+	case "Aircraft.squawk":
+		if e.ComplexityRoot.Aircraft.Squawk == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Squawk(childComplexity), true
+	case "Aircraft.trueTrack":
+		if e.ComplexityRoot.Aircraft.TrueTrack == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.TrueTrack(childComplexity), true
+	case "Aircraft.velocity":
+		if e.ComplexityRoot.Aircraft.Velocity == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.Velocity(childComplexity), true
+	case "Aircraft.verticalRate":
+		if e.ComplexityRoot.Aircraft.VerticalRate == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Aircraft.VerticalRate(childComplexity), true
+
+	case "Query.aircraft":
+		if e.ComplexityRoot.Query.Aircraft == nil {
+			break
+		}
+
+		args, err := ec.field_Query_aircraft_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.ComplexityRoot.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
-
-	case "Query.todos":
-		if e.ComplexityRoot.Query.Todos == nil {
+		return e.ComplexityRoot.Query.Aircraft(childComplexity, args["icao24"].(string)), true
+	case "Query.aircrafts":
+		if e.ComplexityRoot.Query.Aircrafts == nil {
 			break
 		}
 
-		return e.ComplexityRoot.Query.Todos(childComplexity), true
+		return e.ComplexityRoot.Query.Aircrafts(childComplexity), true
 
-	case "Todo.done":
-		if e.ComplexityRoot.Todo.Done == nil {
+	case "Subscription.flightUpdated":
+		if e.ComplexityRoot.Subscription.FlightUpdated == nil {
 			break
 		}
 
-		return e.ComplexityRoot.Todo.Done(childComplexity), true
-	case "Todo.id":
-		if e.ComplexityRoot.Todo.ID == nil {
-			break
+		args, err := ec.field_Subscription_flightUpdated_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
 		}
 
-		return e.ComplexityRoot.Todo.ID(childComplexity), true
-	case "Todo.text":
-		if e.ComplexityRoot.Todo.Text == nil {
-			break
-		}
-
-		return e.ComplexityRoot.Todo.Text(childComplexity), true
-	case "Todo.user":
-		if e.ComplexityRoot.Todo.User == nil {
-			break
-		}
-
-		return e.ComplexityRoot.Todo.User(childComplexity), true
-
-	case "User.id":
-		if e.ComplexityRoot.User.ID == nil {
-			break
-		}
-
-		return e.ComplexityRoot.User.ID(childComplexity), true
-	case "User.name":
-		if e.ComplexityRoot.User.Name == nil {
-			break
-		}
-
-		return e.ComplexityRoot.User.Name(childComplexity), true
+		return e.ComplexityRoot.Subscription.FlightUpdated(childComplexity, args["filter"].(*model.FlightFilter)), true
 
 	}
 	return 0, false
@@ -152,7 +231,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputNewTodo,
+		ec.unmarshalInputFlightFilter,
 	)
 	first := true
 
@@ -187,15 +266,17 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 
 			return &response
 		}
-	case ast.Mutation:
+	case ast.Subscription:
+		next := ec._Subscription(ctx, opCtx.Operation.SelectionSet)
+
+		var buf bytes.Buffer
 		return func(ctx context.Context) *graphql.Response {
-			if !first {
+			buf.Reset()
+			data := next(ctx)
+
+			if data == nil {
 				return nil
 			}
-			first = false
-			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
-			data := ec._Mutation(ctx, opCtx.Operation.SelectionSet)
-			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
 
 			return &graphql.Response{
@@ -247,28 +328,42 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // Each function is generated once per unique object type, deduplicating the
 // switch statements that were previously inlined in every fieldContext_* function.
 
-func (ec *executionContext) childFields_Todo(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+func (ec *executionContext) childFields_Aircraft(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 	switch field.Name {
-	case "id":
-		return ec.fieldContext_Todo_id(ctx, field)
-	case "text":
-		return ec.fieldContext_Todo_text(ctx, field)
-	case "done":
-		return ec.fieldContext_Todo_done(ctx, field)
-	case "user":
-		return ec.fieldContext_Todo_user(ctx, field)
+	case "icao24":
+		return ec.fieldContext_Aircraft_icao24(ctx, field)
+	case "callsign":
+		return ec.fieldContext_Aircraft_callsign(ctx, field)
+	case "originCountry":
+		return ec.fieldContext_Aircraft_originCountry(ctx, field)
+	case "longitude":
+		return ec.fieldContext_Aircraft_longitude(ctx, field)
+	case "latitude":
+		return ec.fieldContext_Aircraft_latitude(ctx, field)
+	case "baroAltitude":
+		return ec.fieldContext_Aircraft_baroAltitude(ctx, field)
+	case "onGround":
+		return ec.fieldContext_Aircraft_onGround(ctx, field)
+	case "velocity":
+		return ec.fieldContext_Aircraft_velocity(ctx, field)
+	case "trueTrack":
+		return ec.fieldContext_Aircraft_trueTrack(ctx, field)
+	case "verticalRate":
+		return ec.fieldContext_Aircraft_verticalRate(ctx, field)
+	case "squawk":
+		return ec.fieldContext_Aircraft_squawk(ctx, field)
+	case "spi":
+		return ec.fieldContext_Aircraft_spi(ctx, field)
+	case "positionSource":
+		return ec.fieldContext_Aircraft_positionSource(ctx, field)
+	case "category":
+		return ec.fieldContext_Aircraft_category(ctx, field)
+	case "lastPositionUpdate":
+		return ec.fieldContext_Aircraft_lastPositionUpdate(ctx, field)
+	case "lastContact":
+		return ec.fieldContext_Aircraft_lastContact(ctx, field)
 	}
-	return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
-}
-
-func (ec *executionContext) childFields_User(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-	switch field.Name {
-	case "id":
-		return ec.fieldContext_User_id(ctx, field)
-	case "name":
-		return ec.fieldContext_User_name(ctx, field)
-	}
-	return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+	return nil, fmt.Errorf("no field named %q was found under type Aircraft", field.Name)
 }
 
 func (ec *executionContext) childFields___Directive(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
@@ -387,20 +482,6 @@ func (ec *executionContext) childFields___Type(ctx context.Context, field graphq
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input",
-		func(ctx context.Context, v any) (model.NewTodo, error) {
-			return ec.unmarshalNNewTodo2goᚑflightᚑtrackerᚋgraphᚋmodelᚐNewTodo(ctx, v)
-		})
-	if err != nil {
-		return nil, err
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -412,6 +493,34 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		return nil, err
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_aircraft_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "icao24",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNString2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["icao24"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_flightUpdated_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filter",
+		func(ctx context.Context, v any) (*model.FlightFilter, error) {
+			return ec.unmarshalOFlightFilter2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐFlightFilter(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
 	return args, nil
 }
 
@@ -475,34 +584,434 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Aircraft_icao24(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
 		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_Mutation_createTodo(ctx, field)
+			return ec.fieldContext_Aircraft_icao24(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.Resolvers.Mutation().CreateTodo(ctx, fc.Args["input"].(model.NewTodo))
+			return obj.Icao24, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *model.Todo) graphql.Marshaler {
-			return ec.marshalNTodo2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐTodo(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
-func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Aircraft_icao24(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_callsign(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_callsign(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Callsign, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_callsign(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_originCountry(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_originCountry(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.OriginCountry, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_originCountry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_longitude(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_longitude(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Longitude, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *float64) graphql.Marshaler {
+			return ec.marshalOFloat2ᚖfloat64(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_longitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_latitude(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_latitude(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Latitude, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *float64) graphql.Marshaler {
+			return ec.marshalOFloat2ᚖfloat64(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_latitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_baroAltitude(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_baroAltitude(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.BaroAltitude, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *float64) graphql.Marshaler {
+			return ec.marshalOFloat2ᚖfloat64(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_baroAltitude(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_onGround(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_onGround(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.OnGround, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_onGround(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_velocity(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_velocity(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Velocity, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *float64) graphql.Marshaler {
+			return ec.marshalOFloat2ᚖfloat64(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_velocity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_trueTrack(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_trueTrack(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TrueTrack, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *float64) graphql.Marshaler {
+			return ec.marshalOFloat2ᚖfloat64(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_trueTrack(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_verticalRate(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_verticalRate(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.VerticalRate, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *float64) graphql.Marshaler {
+			return ec.marshalOFloat2ᚖfloat64(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_verticalRate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Float does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_squawk(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_squawk(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Squawk, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_squawk(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_spi(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_spi(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Spi, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_spi(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_positionSource(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_positionSource(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.PositionSource, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int32) graphql.Marshaler {
+			return ec.marshalNInt2int32(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_positionSource(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_category(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_category(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Category, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int32) graphql.Marshaler {
+			return ec.marshalNInt2int32(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_lastPositionUpdate(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_lastPositionUpdate(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.LastPositionUpdate, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *int32) graphql.Marshaler {
+			return ec.marshalOInt2ᚖint32(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_lastPositionUpdate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Aircraft_lastContact(ctx context.Context, field graphql.CollectedField, obj *model.Aircraft) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Aircraft_lastContact(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.LastContact, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *int32) graphql.Marshaler {
+			return ec.marshalOInt2ᚖint32(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Aircraft_lastContact(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Query_aircrafts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_aircrafts(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.Query().Aircrafts(ctx)
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Aircraft) graphql.Marshaler {
+			return ec.marshalNAircraft2ᚕᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraftᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_aircrafts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Mutation",
+		Object:     "Query",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.childFields_Todo(ctx, field)
+			return ec.childFields_Aircraft(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aircraft(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_aircraft(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Aircraft(ctx, fc.Args["icao24"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.Aircraft) graphql.Marshaler {
+			return ec.marshalOAircraft2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraft(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Query_aircraft(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Aircraft(ctx, field)
 		},
 	}
 	defer func() {
@@ -512,41 +1021,9 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createTodo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_aircraft_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_Query_todos(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.Query().Todos(ctx)
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
-			return ec.marshalNTodo2ᚕᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐTodoᚄ(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_Query_todos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.childFields_Todo(ctx, field)
-		},
 	}
 	return fc, nil
 }
@@ -627,151 +1104,48 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
+func (ec *executionContext) _Subscription_flightUpdated(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
+	return graphql.ResolveFieldStream(
 		ctx,
 		ec.OperationContext,
 		field,
 		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_Todo_id(ctx, field)
+			return ec.fieldContext_Subscription_flightUpdated(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return obj.ID, nil
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Subscription().FlightUpdated(ctx, fc.Args["filter"].(*model.FlightFilter))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
-			return ec.marshalNID2string(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Aircraft) graphql.Marshaler {
+			return ec.marshalNAircraft2ᚕᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraftᚄ(ctx, selections, v)
 		},
 		true,
 		true,
 	)
 }
-func (ec *executionContext) fieldContext_Todo_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Todo", field, false, false, errors.New("field of type ID does not have child fields"))
-}
-
-func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_Todo_text(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return obj.Text, nil
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
-			return ec.marshalNString2string(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_Todo_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Todo", field, false, false, errors.New("field of type String does not have child fields"))
-}
-
-func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_Todo_done(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return obj.Done, nil
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
-			return ec.marshalNBoolean2bool(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_Todo_done(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Todo", field, false, false, errors.New("field of type Boolean does not have child fields"))
-}
-
-func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_Todo_user(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return obj.User, nil
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *model.User) graphql.Marshaler {
-			return ec.marshalNUser2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐUser(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_Todo_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Subscription_flightUpdated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "Subscription",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.childFields_User(ctx, field)
+			return ec.childFields_Aircraft(ctx, field)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Subscription_flightUpdated_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
-}
-
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_User_id(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return obj.ID, nil
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
-			return ec.marshalNID2string(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_User_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("User", field, false, false, errors.New("field of type ID does not have child fields"))
-}
-
-func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_User_name(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return obj.Name, nil
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
-			return ec.marshalNString2string(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_User_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("User", field, false, false, errors.New("field of type String does not have child fields"))
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -1833,8 +2207,8 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj any) (model.NewTodo, error) {
-	var it model.NewTodo
+func (ec *executionContext) unmarshalInputFlightFilter(ctx context.Context, obj any) (model.FlightFilter, error) {
+	var it model.FlightFilter
 	if obj == nil {
 		return it, nil
 	}
@@ -1844,27 +2218,41 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj any) 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"text", "userId"}
+	fieldsInOrder := [...]string{"originCountry", "minAltitude", "maxAltitude", "callsignPrefix"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "text":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+		case "originCountry":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("originCountry"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Text = data
-		case "userId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			it.OriginCountry = data
+		case "minAltitude":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("minAltitude"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UserID = data
+			it.MinAltitude = data
+		case "maxAltitude":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxAltitude"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxAltitude = data
+		case "callsignPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("callsignPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CallsignPrefix = data
 		}
 	}
 	return it, nil
@@ -1878,31 +2266,96 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj any) 
 
 // region    **************************** object.gotpl ****************************
 
-var mutationImplementors = []string{"Mutation"}
+var aircraftImplementors = []string{"Aircraft"}
 
-func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
-	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
-		Object: "Mutation",
-	})
+func (ec *executionContext) _Aircraft(ctx context.Context, sel ast.SelectionSet, obj *model.Aircraft) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aircraftImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	deferredFieldSet := graphql.NewFieldSet(nil)
 	deferLabelToView := make(map[string]*graphql.FieldSetView)
 	for i, field := range fields {
-		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
-			Object: field.Name,
-			Field:  field,
-		})
-
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Mutation")
-		case "createTodo":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createTodo(ctx, field)
-			})
+			out.Values[i] = graphql.MarshalString("Aircraft")
+		case "icao24":
+			out.Values[i] = ec._Aircraft_icao24(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "callsign":
+			out.Values[i] = ec._Aircraft_callsign(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "originCountry":
+			out.Values[i] = ec._Aircraft_originCountry(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "longitude":
+			out.Values[i] = ec._Aircraft_longitude(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "latitude":
+			out.Values[i] = ec._Aircraft_latitude(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "baroAltitude":
+			out.Values[i] = ec._Aircraft_baroAltitude(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "onGround":
+			out.Values[i] = ec._Aircraft_onGround(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "velocity":
+			out.Values[i] = ec._Aircraft_velocity(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "trueTrack":
+			out.Values[i] = ec._Aircraft_trueTrack(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "verticalRate":
+			out.Values[i] = ec._Aircraft_verticalRate(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "squawk":
+			out.Values[i] = ec._Aircraft_squawk(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "spi":
+			out.Values[i] = ec._Aircraft_spi(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "positionSource":
+			out.Values[i] = ec._Aircraft_positionSource(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "category":
+			out.Values[i] = ec._Aircraft_category(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lastPositionUpdate":
+			out.Values[i] = ec._Aircraft_lastPositionUpdate(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "lastContact":
+			out.Values[i] = ec._Aircraft_lastContact(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
 				out.Invalids++
 			}
 		default:
@@ -1946,7 +2399,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "todos":
+		case "aircrafts":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -1955,8 +2408,30 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_todos(ctx, field)
+				res = ec._Query_aircrafts(ctx, field)
 				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aircraft":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aircraft(ctx, field)
+				if res == graphql.RequiredNull {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
@@ -2003,100 +2478,24 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var todoImplementors = []string{"Todo"}
+var subscriptionImplementors = []string{"Subscription"}
 
-func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *model.Todo) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, todoImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Todo")
-		case "id":
-			out.Values[i] = ec._Todo_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "text":
-			out.Values[i] = ec._Todo_text(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "done":
-			out.Values[i] = ec._Todo_done(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "user":
-			out.Values[i] = ec._Todo_user(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
+func (ec *executionContext) _Subscription(ctx context.Context, sel ast.SelectionSet) func(ctx context.Context) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, subscriptionImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Subscription",
 	})
-
-	return out
-}
-
-var userImplementors = []string{"User"}
-
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *model.User) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("User")
-		case "id":
-			out.Values[i] = ec._User_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "name":
-			out.Values[i] = ec._User_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
+	if len(fields) != 1 {
+		graphql.AddErrorf(ctx, "must subscribe to exactly one stream")
+		return nil
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
-
-	return out
+	switch fields[0].Name {
+	case "flightUpdated":
+		return ec._Subscription_flightUpdated(ctx, fields[0])
+	default:
+		panic("unknown field " + strconv.Quote(fields[0].Name))
+	}
 }
 
 var __DirectiveImplementors = []string{"__Directive"}
@@ -2491,6 +2890,32 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAircraft2ᚕᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraftᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Aircraft) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNAircraft2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraft(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNAircraft2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraft(ctx context.Context, sel ast.SelectionSet, v *model.Aircraft) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Aircraft(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2507,25 +2932,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
-	res, err := graphql.UnmarshalID(v)
+func (ec *executionContext) unmarshalNInt2int32(ctx context.Context, v any) (int32, error) {
+	res, err := graphql.UnmarshalInt32(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.SelectionSet, v int32) graphql.Marshaler {
 	_ = sel
-	res := graphql.MarshalID(v)
+	res := graphql.MarshalInt32(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNNewTodo2goᚑflightᚑtrackerᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v any) (model.NewTodo, error) {
-	res, err := ec.unmarshalInputNewTodo(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
@@ -2542,46 +2962,6 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNTodo2goᚑflightᚑtrackerᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v model.Todo) graphql.Marshaler {
-	return ec._Todo(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNTodo2ᚕᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
-	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
-		fc := graphql.GetFieldContext(ctx)
-		fc.Result = &v[i]
-		return ec.marshalNTodo2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
-	})
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNTodo2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Todo(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNUser2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -2724,6 +3104,13 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) marshalOAircraft2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraft(ctx context.Context, sel ast.SelectionSet, v *model.Aircraft) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Aircraft(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2751,6 +3138,49 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	_ = sel
 	_ = ctx
 	res := graphql.MarshalBoolean(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOFlightFilter2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐFlightFilter(ctx context.Context, v any) (*model.FlightFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputFlightFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v any) (*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalFloatContext(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel ast.SelectionSet, v *float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	res := graphql.MarshalFloatContext(*v)
+	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint32(ctx context.Context, v any) (*int32, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt32(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint32(ctx context.Context, sel ast.SelectionSet, v *int32) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalInt32(*v)
 	return res
 }
 

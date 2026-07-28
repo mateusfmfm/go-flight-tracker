@@ -218,7 +218,7 @@ go-flight-tracker/
 - [x] Poller OpenSky com ticker e context
 - [x] State manager concorrente (`sync.RWMutex`)
 - [x] Integração Redis Pub/Sub + cache
-- [ ] GraphQL Subscriptions via WebSocket
+- [x] GraphQL Subscriptions via WebSocket
 - [ ] Docker Compose + health endpoints
 - [ ] Manifests Kubernetes (probes, HPA, ConfigMaps)
 
@@ -447,7 +447,7 @@ go-flight-tracker/
 - [x] OpenSky poller with ticker and context
 - [x] Concurrent state manager (`sync.RWMutex`)
 - [x] Redis Pub/Sub + cache integration
-- [ ] GraphQL Subscriptions over WebSocket
+- [x] GraphQL Subscriptions over WebSocket
 - [ ] Docker Compose + health endpoints
 - [ ] Kubernetes manifests (probes, HPA, ConfigMaps)
 

@@ -2,25 +2,34 @@
 
 package model
 
-type Mutation struct {
+type Aircraft struct {
+	Icao24             string   `json:"icao24"`
+	Callsign           string   `json:"callsign"`
+	OriginCountry      string   `json:"originCountry"`
+	Longitude          *float64 `json:"longitude,omitempty"`
+	Latitude           *float64 `json:"latitude,omitempty"`
+	BaroAltitude       *float64 `json:"baroAltitude,omitempty"`
+	OnGround           bool     `json:"onGround"`
+	Velocity           *float64 `json:"velocity,omitempty"`
+	TrueTrack          *float64 `json:"trueTrack,omitempty"`
+	VerticalRate       *float64 `json:"verticalRate,omitempty"`
+	Squawk             *string  `json:"squawk,omitempty"`
+	Spi                bool     `json:"spi"`
+	PositionSource     int32    `json:"positionSource"`
+	Category           int32    `json:"category"`
+	LastPositionUpdate *int32   `json:"lastPositionUpdate,omitempty"`
+	LastContact        *int32   `json:"lastContact,omitempty"`
 }
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type FlightFilter struct {
+	OriginCountry  *string  `json:"originCountry,omitempty"`
+	MinAltitude    *float64 `json:"minAltitude,omitempty"`
+	MaxAltitude    *float64 `json:"maxAltitude,omitempty"`
+	CallsignPrefix *string  `json:"callsignPrefix,omitempty"`
 }
 
 type Query struct {
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
-}
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type Subscription struct {
 }
