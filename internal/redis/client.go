@@ -91,3 +91,7 @@ func (c *Client) SubscribeAircrafts(ctx context.Context) (<-chan []*flight.Aircr
 
 	return out, nil
 }
+
+func (c *Client) Ping(ctx context.Context) error {
+	return c.rdb.Ping(ctx).Err()
+}

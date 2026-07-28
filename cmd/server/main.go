@@ -12,6 +12,7 @@ import (
 	"go-flight-tracker/graph"
 	"go-flight-tracker/internal/config"
 	"go-flight-tracker/internal/flight"
+	"go-flight-tracker/internal/health"
 	"go-flight-tracker/internal/redis"
 	"go-flight-tracker/internal/store"
 
@@ -37,6 +38,9 @@ func main() {
 		log.Fatalf("failed to initialize redis:: %v", err)
 	}
 
+	// Register health check handlers
+	health.RegisterHandlers(redisClient)
+
 	// Shared HTTP client for OpenSky requests
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
@@ -48,6 +52,27 @@ func main() {
 
 	// In-memory store for the latest aircraft state
 	aircraftStore := store.NewAircraftStore()
+
+	// Wire GraphQL schema with the in-memory store and Redis client
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{Store: aircraftStore, RedisClient: redisClient}}))
+
+	// Enable WebSocket (subscriptions) plus standard HTTP transports
+	srv.AddTransport(transport.Websocket{KeepAlivePingInterval: 10 * time.Second})
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+
+	// Playground UI at / and GraphQL API at /query
+	http.Handle("/", playground.Handler("GraphQL Playground", "/query"))
+	http.Handle("/query", srv)
+
+	// Bring up HTTP early so :8080 is ready before Pub/Sub / poller work
+	go func() {
+		log.Println("GraphQL Playground available at http://localhost:8080/")
+		if err := http.ListenAndServe(":8080", nil); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("http server error: %v", err)
+		}
+	}()
 
 	// Start polling OpenSky in the background
 	go poller.Start(ctx)
@@ -70,29 +95,8 @@ func main() {
 				if !ok {
 					return
 				}
-				log.Printf("📡 [REDIS PUB/SUB] Event received! Broadcasted %d aircrafts to subscribers\n", len(aircrafts))
+				log.Printf("[REDIS PUB/SUB] Event received! Broadcasted %d aircrafts to subscribers\n", len(aircrafts))
 			}
-		}
-	}()
-
-	// Wire GraphQL schema with the in-memory store and Redis client
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{Store: aircraftStore, RedisClient: redisClient}}))
-
-	// Enable WebSocket (subscriptions) plus standard HTTP transports
-	srv.AddTransport(transport.Websocket{KeepAlivePingInterval: 10 * time.Second})
-	srv.AddTransport(transport.Options{})
-	srv.AddTransport(transport.GET{})
-	srv.AddTransport(transport.POST{})
-
-	// Playground UI at / and GraphQL API at /query
-	http.Handle("/", playground.Handler("GraphQL Playground", "/query"))
-	http.Handle("/query", srv)
-
-	// Serve GraphQL Playground and the /query endpoint
-	go func() {
-		log.Println("🚀 GraphQL Playground available at http://localhost:8080/")
-		if err := http.ListenAndServe(":8080", nil); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("http server error: %v", err)
 		}
 	}()
 
@@ -124,6 +128,7 @@ func main() {
 			}
 
 		case <-ctx.Done():
+			// Graceful exit on interrupt
 			return
 		}
 	}

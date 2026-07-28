@@ -34,6 +34,11 @@ type BoundingBox struct {
 func Load() (*Config, error) {
 	_ = godotenv.Load()
 
+	redisChannel := os.Getenv("REDIS_CHANNEL")
+	if redisChannel == "" {
+		redisChannel = "aircraft:updates"
+	}
+
 	cfg := &Config{
 		OpenSkyClientID:     os.Getenv("OPENSKY_CLIENT_ID"),
 		OpenSkyClientSecret: os.Getenv("OPENSKY_CLIENT_SECRET"),
@@ -43,7 +48,7 @@ func Load() (*Config, error) {
 		RedisAddr:    os.Getenv("REDIS_ADDR"),
 		RedisPass:    os.Getenv("REDIS_PASSWORD"),
 		RedisDB:      getEnvAsInt(os.Getenv("REDIS_DB"), 0),
-		RedisChannel: os.Getenv("REDIS_CHANNEL"),
+		RedisChannel: redisChannel,
 	}
 
 	if laminStr := os.Getenv("OPENSKY_LAMIN"); laminStr != "" {

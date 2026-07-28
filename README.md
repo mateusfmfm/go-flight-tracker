@@ -219,7 +219,7 @@ go-flight-tracker/
 - [x] State manager concorrente (`sync.RWMutex`)
 - [x] Integração Redis Pub/Sub + cache
 - [x] GraphQL Subscriptions via WebSocket
-- [ ] Docker Compose + health endpoints
+- [x] Docker Compose + health endpoints
 - [ ] Manifests Kubernetes (probes, HPA, ConfigMaps)
 
 ---
@@ -448,7 +448,7 @@ go-flight-tracker/
 - [x] Concurrent state manager (`sync.RWMutex`)
 - [x] Redis Pub/Sub + cache integration
 - [x] GraphQL Subscriptions over WebSocket
-- [ ] Docker Compose + health endpoints
+- [x] Docker Compose + health endpoints
 - [ ] Kubernetes manifests (probes, HPA, ConfigMaps)
 
 ---

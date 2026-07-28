@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: flight-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - flight-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flight-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      # Override host Redis from .env with the compose service name
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - flight-net
+
+networks:
+  flight-net:
+    driver: bridge
