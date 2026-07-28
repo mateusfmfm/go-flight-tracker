@@ -79,7 +79,7 @@ func main() {
 			}
 
 		case <-ctx.Done():
-			log.Println("Sinal de encerramento recebido. Finalizando aplicação graciosamente...")
+			log.Println("Closing application...")
 			return
 		}
 	}
