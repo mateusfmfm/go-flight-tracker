@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-flight-tracker/internal/config"
 	"go-flight-tracker/internal/flight"
+	"go-flight-tracker/internal/redis"
 	"go-flight-tracker/internal/store"
 	"log"
 	"net/http"
@@ -22,6 +23,11 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	redisClient, err := redis.NewClient(ctx, *cfg)
+	if err != nil {
+		log.Fatalf("failed to initialize redis:: %v", err)
+	}
+
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
@@ -34,6 +40,25 @@ func main() {
 	go poller.Start(ctx)
 
 	log.Println("Server started! Waiting for data from OpenSky (Press Ctrl+C to exit)...")
+
+	subChan, err := redisClient.SubscribeAircrafts(ctx)
+	if err != nil {
+		log.Fatalf("failed to subscribe to redis: %v", err)
+	}
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case aircrafts, ok := <-subChan:
+				if !ok {
+					return
+				}
+				log.Printf("📡 [REDIS PUB/SUB] Event received! Broadcasted %d aircrafts to subscribers\n", len(aircrafts))
+			}
+		}
+	}()
 
 	for {
 		select {
