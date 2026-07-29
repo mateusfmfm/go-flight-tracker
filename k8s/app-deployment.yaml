@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flight-app-deployment
+  labels:
+    app: flight-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flight-app
+  template:
+    metadata:
+      labels:
+        app: flight-app
+    spec:
+      containers:
+      - name: flight-app
+        image: go-flight-tracker:latest
+        imagePullPolicy: IFNotPresent
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: flight-tracker-config
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5

@@ -220,7 +220,7 @@ go-flight-tracker/
 - [x] Integração Redis Pub/Sub + cache
 - [x] GraphQL Subscriptions via WebSocket
 - [x] Docker Compose + health endpoints
-- [ ] Manifests Kubernetes (probes, HPA, ConfigMaps)
+- [x] Manifests Kubernetes (probes, HPA, ConfigMaps)
 
 ---
 
@@ -449,7 +449,7 @@ go-flight-tracker/
 - [x] Redis Pub/Sub + cache integration
 - [x] GraphQL Subscriptions over WebSocket
 - [x] Docker Compose + health endpoints
-- [ ] Kubernetes manifests (probes, HPA, ConfigMaps)
+- [x] Kubernetes manifests (probes, HPA, ConfigMaps)
 
 ---
 

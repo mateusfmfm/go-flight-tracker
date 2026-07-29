@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flight-tracker-config
+  labels:
+    app: flight-tracker
+data:
+  REDIS_ADDR: "redis-service:6379"
+  POLLER_INTERVAL: "10s"
