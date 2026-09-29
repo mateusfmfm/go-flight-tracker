@@ -56,9 +56,18 @@ type ComplexityRoot struct {
 		VerticalRate       func(childComplexity int) int
 	}
 
+	AircraftPhoto struct {
+		ID           func(childComplexity int) int
+		Link         func(childComplexity int) int
+		Photographer func(childComplexity int) int
+		ThumbnailURL func(childComplexity int) int
+		URL          func(childComplexity int) int
+	}
+
 	Query struct {
-		Aircraft  func(childComplexity int, icao24 string) int
-		Aircrafts func(childComplexity int) int
+		Aircraft       func(childComplexity int, icao24 string) int
+		AircraftPhotos func(childComplexity int, icao24 string) int
+		Aircrafts      func(childComplexity int, filter *model.FlightFilter) int
 	}
 
 	Subscription struct {
@@ -71,8 +80,9 @@ type ComplexityRoot struct {
 // region    ************************** generated!.gotpl **************************
 
 type QueryResolver interface {
-	Aircrafts(ctx context.Context) ([]*model.Aircraft, error)
+	Aircrafts(ctx context.Context, filter *model.FlightFilter) ([]*model.Aircraft, error)
 	Aircraft(ctx context.Context, icao24 string) (*model.Aircraft, error)
+	AircraftPhotos(ctx context.Context, icao24 string) ([]*model.AircraftPhoto, error)
 }
 type SubscriptionResolver interface {
 	FlightUpdated(ctx context.Context, filter *model.FlightFilter) (<-chan []*model.Aircraft, error)
@@ -193,6 +203,37 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Aircraft.VerticalRate(childComplexity), true
 
+	case "AircraftPhoto.id":
+		if e.ComplexityRoot.AircraftPhoto.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AircraftPhoto.ID(childComplexity), true
+	case "AircraftPhoto.link":
+		if e.ComplexityRoot.AircraftPhoto.Link == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AircraftPhoto.Link(childComplexity), true
+	case "AircraftPhoto.photographer":
+		if e.ComplexityRoot.AircraftPhoto.Photographer == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AircraftPhoto.Photographer(childComplexity), true
+	case "AircraftPhoto.thumbnailUrl":
+		if e.ComplexityRoot.AircraftPhoto.ThumbnailURL == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AircraftPhoto.ThumbnailURL(childComplexity), true
+	case "AircraftPhoto.url":
+		if e.ComplexityRoot.AircraftPhoto.URL == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AircraftPhoto.URL(childComplexity), true
+
 	case "Query.aircraft":
 		if e.ComplexityRoot.Query.Aircraft == nil {
 			break
@@ -204,12 +245,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.Aircraft(childComplexity, args["icao24"].(string)), true
+	case "Query.aircraftPhotos":
+		if e.ComplexityRoot.Query.AircraftPhotos == nil {
+			break
+		}
+
+		args, err := ec.field_Query_aircraftPhotos_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.AircraftPhotos(childComplexity, args["icao24"].(string)), true
 	case "Query.aircrafts":
 		if e.ComplexityRoot.Query.Aircrafts == nil {
 			break
 		}
 
-		return e.ComplexityRoot.Query.Aircrafts(childComplexity), true
+		args, err := ec.field_Query_aircrafts_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Aircrafts(childComplexity, args["filter"].(*model.FlightFilter)), true
 
 	case "Subscription.flightUpdated":
 		if e.ComplexityRoot.Subscription.FlightUpdated == nil {
@@ -366,6 +423,22 @@ func (ec *executionContext) childFields_Aircraft(ctx context.Context, field grap
 	return nil, fmt.Errorf("no field named %q was found under type Aircraft", field.Name)
 }
 
+func (ec *executionContext) childFields_AircraftPhoto(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_AircraftPhoto_id(ctx, field)
+	case "thumbnailUrl":
+		return ec.fieldContext_AircraftPhoto_thumbnailUrl(ctx, field)
+	case "url":
+		return ec.fieldContext_AircraftPhoto_url(ctx, field)
+	case "photographer":
+		return ec.fieldContext_AircraftPhoto_photographer(ctx, field)
+	case "link":
+		return ec.fieldContext_AircraftPhoto_link(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type AircraftPhoto", field.Name)
+}
+
 func (ec *executionContext) childFields___Directive(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 	switch field.Name {
 	case "name":
@@ -496,6 +569,20 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_aircraftPhotos_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "icao24",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNString2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["icao24"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_aircraft_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -507,6 +594,20 @@ func (ec *executionContext) field_Query_aircraft_args(ctx context.Context, rawAr
 		return nil, err
 	}
 	args["icao24"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_aircrafts_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filter",
+		func(ctx context.Context, v any) (*model.FlightFilter, error) {
+			return ec.unmarshalOFlightFilter2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐFlightFilter(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
 	return args, nil
 }
 
@@ -952,6 +1053,121 @@ func (ec *executionContext) fieldContext_Aircraft_lastContact(_ context.Context,
 	return graphql.NewScalarFieldContext("Aircraft", field, false, false, errors.New("field of type Int does not have child fields"))
 }
 
+func (ec *executionContext) _AircraftPhoto_id(ctx context.Context, field graphql.CollectedField, obj *model.AircraftPhoto) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_AircraftPhoto_id(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_AircraftPhoto_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("AircraftPhoto", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _AircraftPhoto_thumbnailUrl(ctx context.Context, field graphql.CollectedField, obj *model.AircraftPhoto) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_AircraftPhoto_thumbnailUrl(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ThumbnailURL, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_AircraftPhoto_thumbnailUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("AircraftPhoto", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _AircraftPhoto_url(ctx context.Context, field graphql.CollectedField, obj *model.AircraftPhoto) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_AircraftPhoto_url(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.URL, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_AircraftPhoto_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("AircraftPhoto", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _AircraftPhoto_photographer(ctx context.Context, field graphql.CollectedField, obj *model.AircraftPhoto) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_AircraftPhoto_photographer(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Photographer, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_AircraftPhoto_photographer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("AircraftPhoto", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _AircraftPhoto_link(ctx context.Context, field graphql.CollectedField, obj *model.AircraftPhoto) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_AircraftPhoto_link(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Link, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_AircraftPhoto_link(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("AircraftPhoto", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
 func (ec *executionContext) _Query_aircrafts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -961,7 +1177,8 @@ func (ec *executionContext) _Query_aircrafts(ctx context.Context, field graphql.
 			return ec.fieldContext_Query_aircrafts(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.Query().Aircrafts(ctx)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Aircrafts(ctx, fc.Args["filter"].(*model.FlightFilter))
 		},
 		nil,
 		func(ctx context.Context, selections ast.SelectionSet, v []*model.Aircraft) graphql.Marshaler {
@@ -971,7 +1188,7 @@ func (ec *executionContext) _Query_aircrafts(ctx context.Context, field graphql.
 		true,
 	)
 }
-func (ec *executionContext) fieldContext_Query_aircrafts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_aircrafts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -980,6 +1197,17 @@ func (ec *executionContext) fieldContext_Query_aircrafts(_ context.Context, fiel
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return ec.childFields_Aircraft(ctx, field)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_aircrafts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -1022,6 +1250,50 @@ func (ec *executionContext) fieldContext_Query_aircraft(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_aircraft_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aircraftPhotos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_aircraftPhotos(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().AircraftPhotos(ctx, fc.Args["icao24"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.AircraftPhoto) graphql.Marshaler {
+			return ec.marshalNAircraftPhoto2ᚕᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraftPhotoᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_aircraftPhotos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_AircraftPhoto(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_aircraftPhotos_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2218,7 +2490,7 @@ func (ec *executionContext) unmarshalInputFlightFilter(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"originCountry", "minAltitude", "maxAltitude", "callsignPrefix"}
+	fieldsInOrder := [...]string{"originCountry", "minAltitude", "maxAltitude", "callsignPrefix", "lamin", "lomin", "lamax", "lomax"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2253,6 +2525,34 @@ func (ec *executionContext) unmarshalInputFlightFilter(ctx context.Context, obj 
 				return it, err
 			}
 			it.CallsignPrefix = data
+		case "lamin":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lamin"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Lamin = data
+		case "lomin":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lomin"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Lomin = data
+		case "lamax":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lamax"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Lamax = data
+		case "lomax":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lomax"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Lomax = data
 		}
 	}
 	return it, nil
@@ -2379,6 +2679,64 @@ func (ec *executionContext) _Aircraft(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var aircraftPhotoImplementors = []string{"AircraftPhoto"}
+
+func (ec *executionContext) _AircraftPhoto(ctx context.Context, sel ast.SelectionSet, obj *model.AircraftPhoto) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aircraftPhotoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AircraftPhoto")
+		case "id":
+			out.Values[i] = ec._AircraftPhoto_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "thumbnailUrl":
+			out.Values[i] = ec._AircraftPhoto_thumbnailUrl(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "url":
+			out.Values[i] = ec._AircraftPhoto_url(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "photographer":
+			out.Values[i] = ec._AircraftPhoto_photographer(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "link":
+			out.Values[i] = ec._AircraftPhoto_link(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -2432,6 +2790,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_aircraft(ctx, field)
 				if res == graphql.RequiredNull {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aircraftPhotos":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aircraftPhotos(ctx, field)
+				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
@@ -2914,6 +3294,32 @@ func (ec *executionContext) marshalNAircraft2ᚖgoᚑflightᚑtrackerᚋgraphᚋ
 		return graphql.Null
 	}
 	return ec._Aircraft(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNAircraftPhoto2ᚕᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraftPhotoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.AircraftPhoto) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNAircraftPhoto2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraftPhoto(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNAircraftPhoto2ᚖgoᚑflightᚑtrackerᚋgraphᚋmodelᚐAircraftPhoto(ctx context.Context, sel ast.SelectionSet, v *model.AircraftPhoto) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._AircraftPhoto(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {

@@ -9,17 +9,11 @@ import (
 	"context"
 	"fmt"
 	"go-flight-tracker/graph/model"
-	"go-flight-tracker/internal/flight"
 )
 
 // Aircrafts is the resolver for the aircrafts field.
-func (r *queryResolver) Aircrafts(ctx context.Context) ([]*model.Aircraft, error) {
-	aircrafts := r.Store.GetAll()
-	models := make([]*model.Aircraft, 0, len(aircrafts))
-	for _, aircraft := range aircrafts {
-		models = append(models, mapToModel(aircraft))
-	}
-	return models, nil
+func (r *queryResolver) Aircrafts(ctx context.Context, filter *model.FlightFilter) ([]*model.Aircraft, error) {
+	return filterAircrafts(r.Store.GetAll(), filter), nil
 }
 
 // Aircraft is the resolver for the aircraft field.
@@ -29,6 +23,32 @@ func (r *queryResolver) Aircraft(ctx context.Context, icao24 string) (*model.Air
 		return nil, fmt.Errorf("aircraft not found")
 	}
 	return mapToModel(aircraft), nil
+}
+
+// AircraftPhotos is the resolver for the aircraftPhotos field.
+func (r *queryResolver) AircraftPhotos(ctx context.Context, icao24 string) ([]*model.AircraftPhoto, error) {
+	if r.PhotosService == nil {
+		return []*model.AircraftPhoto{}, nil
+	}
+
+	photos, err := r.PhotosService.ByICAO(ctx, icao24)
+	if err != nil || len(photos) == 0 {
+		return []*model.AircraftPhoto{}, nil
+	}
+
+	out := make([]*model.AircraftPhoto, 0, len(photos))
+	for _, p := range photos {
+		photographer := p.Photographer
+		link := p.Link
+		out = append(out, &model.AircraftPhoto{
+			ID:           p.ID,
+			ThumbnailURL: p.ThumbnailURL,
+			URL:          p.URL,
+			Photographer: &photographer,
+			Link:         &link,
+		})
+	}
+	return out, nil
 }
 
 // FlightUpdated is the resolver for the flightUpdated field.
@@ -49,43 +69,11 @@ func (r *subscriptionResolver) FlightUpdated(ctx context.Context, filter *model.
 				if !ok {
 					return
 				}
-				models := make([]*model.Aircraft, 0, len(aircrafts))
-				for _, aircraft := range aircrafts {
-					models = append(models, mapToModel(aircraft))
-				}
-				out <- models
+				out <- filterAircrafts(aircrafts, filter)
 			}
 		}
 	}()
 	return out, nil
-}
-
-func mapToModel(a *flight.Aircraft) *model.Aircraft {
-	if a == nil {
-		return nil
-	}
-	lastPos := int32(a.TimePosition)
-	lastContact := int32(a.LastContact)
-	squawk := a.Squawk
-
-	return &model.Aircraft{
-		Icao24:             a.Icao24,
-		Callsign:           a.Callsign,
-		OriginCountry:      a.OriginCountry,
-		Longitude:          &a.Longitude,
-		Latitude:           &a.Latitude,
-		BaroAltitude:       &a.BaroAltitude,
-		OnGround:           a.OnGround,
-		Velocity:           &a.Velocity,
-		TrueTrack:          &a.TrueTrack,
-		VerticalRate:       &a.VerticalRate,
-		Squawk:             &squawk,
-		Spi:                a.Spi,
-		PositionSource:     int32(a.PositionSource),
-		Category:           int32(a.Category),
-		LastPositionUpdate: &lastPos,
-		LastContact:        &lastContact,
-	}
 }
 
 // Query returns QueryResolver implementation.
@@ -98,23 +86,3 @@ type (
 	queryResolver        struct{ *Resolver }
 	subscriptionResolver struct{ *Resolver }
 )
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
-type (
-	mutationResolver struct{ *Resolver }
-	queryResolver    struct{ *Resolver }
-)
-*/

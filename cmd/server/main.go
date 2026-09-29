@@ -11,14 +11,17 @@ import (
 
 	"go-flight-tracker/graph"
 	"go-flight-tracker/internal/config"
+	appcors "go-flight-tracker/internal/cors"
 	"go-flight-tracker/internal/flight"
 	"go-flight-tracker/internal/health"
+	"go-flight-tracker/internal/photos"
 	"go-flight-tracker/internal/redis"
 	"go-flight-tracker/internal/store"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	coderws "github.com/coder/websocket"
 )
 
 func main() {
@@ -41,7 +44,7 @@ func main() {
 	// Register health check handlers
 	health.RegisterHandlers(redisClient)
 
-	// Shared HTTP client for OpenSky requests
+	// Shared HTTP client for OpenSky + photo provider requests
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 	}
@@ -53,11 +56,30 @@ func main() {
 	// In-memory store for the latest aircraft state
 	aircraftStore := store.NewAircraftStore()
 
-	// Wire GraphQL schema with the in-memory store and Redis client
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{Store: aircraftStore, RedisClient: redisClient}}))
+	// Aircraft photos (Planespotters) with Redis cache; failures → empty list
+	photosService := photos.NewService(httpClient, redisClient)
 
-	// Enable WebSocket (subscriptions) plus standard HTTP transports
-	srv.AddTransport(transport.Websocket{KeepAlivePingInterval: 10 * time.Second})
+	// Wire GraphQL schema with the in-memory store and Redis client
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		Store:         aircraftStore,
+		RedisClient:   redisClient,
+		PhotosService: photosService,
+	}}))
+
+	corsCfg := appcors.Config{Origins: cfg.CORSOrigins}
+
+	// Enable WebSocket (subscriptions) plus standard HTTP transports.
+	// OriginPatterns allow Angular (and other) frontends on a different host/port.
+	wsImpl := transport.CoderWebsocketImplementation{
+		AcceptOptions: coderws.AcceptOptions{
+			OriginPatterns:     corsCfg.OriginPatterns(),
+			InsecureSkipVerify: corsCfg.AllowAll(),
+		},
+	}
+	srv.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+		Implementation:        wsImpl,
+	})
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
@@ -68,8 +90,9 @@ func main() {
 
 	// Bring up HTTP early so :8080 is ready before Pub/Sub / poller work
 	go func() {
-		log.Println("GraphQL Playground available at http://localhost:8080/")
-		if err := http.ListenAndServe(":8080", nil); err != nil && err != http.ErrServerClosed {
+		log.Printf("GraphQL Playground available at http://localhost:8080/ (CORS: %v)", cfg.CORSOrigins)
+		handler := appcors.Middleware(corsCfg, http.DefaultServeMux)
+		if err := http.ListenAndServe(":8080", handler); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("http server error: %v", err)
 		}
 	}()

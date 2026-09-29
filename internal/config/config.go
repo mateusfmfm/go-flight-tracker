@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"go-flight-tracker/internal/cors"
+
 	"github.com/joho/godotenv"
 )
 
@@ -22,6 +24,9 @@ type Config struct {
 	RedisPass    string
 	RedisDB      int
 	RedisChannel string
+
+	// HTTP / browser clients
+	CORSOrigins []string
 }
 
 type BoundingBox struct {
@@ -49,6 +54,8 @@ func Load() (*Config, error) {
 		RedisPass:    os.Getenv("REDIS_PASSWORD"),
 		RedisDB:      getEnvAsInt(os.Getenv("REDIS_DB"), 0),
 		RedisChannel: redisChannel,
+
+		CORSOrigins: cors.ParseOrigins(os.Getenv("CORS_ORIGINS")),
 	}
 
 	if laminStr := os.Getenv("OPENSKY_LAMIN"); laminStr != "" {

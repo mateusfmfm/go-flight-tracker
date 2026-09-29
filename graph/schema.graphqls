@@ -17,22 +17,38 @@ type Aircraft {
   lastContact: Int
 }
 
+type AircraftPhoto {
+  id: String!
+  thumbnailUrl: String!
+  url: String!
+  photographer: String
+  link: String
+}
+
 input FlightFilter {
   originCountry: String
   minAltitude: Float
   maxAltitude: Float
   callsignPrefix: String
+  # Map viewport bounding box (degrees). Frontend sends map.getBounds().
+  lamin: Float
+  lomin: Float
+  lamax: Float
+  lomax: Float
 }
 
 type Query {
-  #Map search
-  aircrafts: [Aircraft!]!
-  
-  #Search for a specific aircraft by ICAO24
+  # Map search — optional filter clips by viewport / altitude / country / callsign
+  aircrafts(filter: FlightFilter): [Aircraft!]!
+
+  # Search for a specific aircraft by ICAO24
   aircraft(icao24: String!): Aircraft
+
+  # Up to 3 photos for an aircraft (empty list if provider fails / none found)
+  aircraftPhotos(icao24: String!): [AircraftPhoto!]!
 }
 
 type Subscription {
-  #Subscribe to flight updates
+  # Subscribe to flight updates (same filter as aircrafts)
   flightUpdated(filter: FlightFilter): [Aircraft!]!
 }

@@ -21,11 +21,23 @@ type Aircraft struct {
 	LastContact        *int32   `json:"lastContact,omitempty"`
 }
 
+type AircraftPhoto struct {
+	ID           string  `json:"id"`
+	ThumbnailURL string  `json:"thumbnailUrl"`
+	URL          string  `json:"url"`
+	Photographer *string `json:"photographer,omitempty"`
+	Link         *string `json:"link,omitempty"`
+}
+
 type FlightFilter struct {
 	OriginCountry  *string  `json:"originCountry,omitempty"`
 	MinAltitude    *float64 `json:"minAltitude,omitempty"`
 	MaxAltitude    *float64 `json:"maxAltitude,omitempty"`
 	CallsignPrefix *string  `json:"callsignPrefix,omitempty"`
+	Lamin          *float64 `json:"lamin,omitempty"`
+	Lomin          *float64 `json:"lomin,omitempty"`
+	Lamax          *float64 `json:"lamax,omitempty"`
+	Lomax          *float64 `json:"lomax,omitempty"`
 }
 
 type Query struct {

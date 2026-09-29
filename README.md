@@ -143,6 +143,68 @@ Variáveis de ambiente típicas:
 | `REDIS_ADDR` | Endereço do Redis | `redis:6379` |
 | `POLL_INTERVAL` | Intervalo do poller OpenSky | `10s` |
 | `OPENSKY_URL` | Endpoint base da OpenSky | OpenSky public API |
+| `OPENSKY_LAMIN` / `LOMIN` / `LAMAX` / `LOMAX` | Bbox estática do poller OpenSky (região fixa) | (mundo inteiro) |
+| `CORS_ORIGINS` | Origens do browser (Angular/Pages), separadas por vírgula. Use `*` só em dev | `http://localhost:4200`, `http://127.0.0.1:4200` |
+
+### GraphQL — mapa (viewport)
+
+Query e subscription aceitam `FlightFilter` com bbox da área visível do mapa:
+
+```graphql
+query {
+  aircrafts(filter: {
+    lamin: -25.0
+    lomin: -48.0
+    lamax: -22.0
+    lomax: -45.0
+  }) {
+    icao24
+    callsign
+    latitude
+    longitude
+    baroAltitude
+    trueTrack
+  }
+}
+```
+
+```graphql
+subscription {
+  flightUpdated(filter: {
+    lamin: -25.0
+    lomin: -48.0
+    lamax: -22.0
+    lomax: -45.0
+  }) {
+    icao24
+    callsign
+    latitude
+    longitude
+    trueTrack
+  }
+}
+```
+
+Outros campos do filter: `originCountry`, `minAltitude`, `maxAltitude`, `callsignPrefix`.
+Aeronaves sem posição válida são omitidas quando a bbox está presente.
+
+CORS/WebSocket: configure `CORS_ORIGINS` com a URL do Angular (ex. `http://localhost:4200`).
+
+### Fotos da aeronave
+
+```graphql
+query {
+  aircraftPhotos(icao24: "e48b00") {
+    id
+    thumbnailUrl
+    url
+    photographer
+    link
+  }
+}
+```
+
+Retorna no máximo **3** fotos (Planespotters). Se o provedor falhar ou não houver imagem → `[]` (o frontend trata o vazio). Resultados são cacheados no Redis (~6h).
 
 ### Desenvolvimento sem Docker (API)
 
@@ -221,6 +283,11 @@ go-flight-tracker/
 - [x] GraphQL Subscriptions via WebSocket
 - [x] Docker Compose + health endpoints
 - [x] Manifests Kubernetes (probes, HPA, ConfigMaps)
+- [x] CORS + WebSocket Origin (`CORS_ORIGINS`)
+- [x] `FlightFilter` com bbox (viewport do mapa) em query/subscription
+- [x] `aircraftPhotos(icao24)` — até 3 imagens (Planespotters + cache Redis)
+- [ ] Frontend mapa (Angular + MapLibre)
+- [ ] Deploy VPS + HTTPS
 
 ---
 
@@ -372,6 +439,68 @@ Typical environment variables:
 | `REDIS_ADDR` | Redis address | `redis:6379` |
 | `POLL_INTERVAL` | OpenSky poller interval | `10s` |
 | `OPENSKY_URL` | OpenSky base endpoint | OpenSky public API |
+| `OPENSKY_LAMIN` / `LOMIN` / `LAMAX` / `LOMAX` | Static OpenSky poller bbox | (worldwide) |
+| `CORS_ORIGINS` | Browser origins (Angular/Pages), comma-separated. Use `*` only in dev | `http://localhost:4200`, `http://127.0.0.1:4200` |
+
+### GraphQL — map viewport
+
+Query and subscription accept `FlightFilter` with the visible map bounding box:
+
+```graphql
+query {
+  aircrafts(filter: {
+    lamin: -25.0
+    lomin: -48.0
+    lamax: -22.0
+    lomax: -45.0
+  }) {
+    icao24
+    callsign
+    latitude
+    longitude
+    baroAltitude
+    trueTrack
+  }
+}
+```
+
+```graphql
+subscription {
+  flightUpdated(filter: {
+    lamin: -25.0
+    lomin: -48.0
+    lamax: -22.0
+    lomax: -45.0
+  }) {
+    icao24
+    callsign
+    latitude
+    longitude
+    trueTrack
+  }
+}
+```
+
+Other filter fields: `originCountry`, `minAltitude`, `maxAltitude`, `callsignPrefix`.
+Aircraft without a valid position are omitted when a bbox is provided.
+
+CORS/WebSocket: set `CORS_ORIGINS` to your Angular URL (e.g. `http://localhost:4200`).
+
+### Aircraft photos
+
+```graphql
+query {
+  aircraftPhotos(icao24: "e48b00") {
+    id
+    thumbnailUrl
+    url
+    photographer
+    link
+  }
+}
+```
+
+Returns up to **3** photos (Planespotters). Provider failure / no images → `[]` (frontend handles empty). Results are cached in Redis (~6h).
 
 ### Development without Docker (API)
 
@@ -450,6 +579,11 @@ go-flight-tracker/
 - [x] GraphQL Subscriptions over WebSocket
 - [x] Docker Compose + health endpoints
 - [x] Kubernetes manifests (probes, HPA, ConfigMaps)
+- [x] CORS + WebSocket Origin (`CORS_ORIGINS`)
+- [x] `FlightFilter` bbox (map viewport) on query/subscription
+- [x] `aircraftPhotos(icao24)` — up to 3 images (Planespotters + Redis cache)
+- [ ] Map frontend (Angular + MapLibre)
+- [ ] VPS deploy + HTTPS
 
 ---
 

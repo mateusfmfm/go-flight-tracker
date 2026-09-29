@@ -46,6 +46,20 @@ func (c *Client) SetCache(ctx context.Context, key string, aircrafts []*flight.A
 	return c.rdb.Set(ctx, key, data, ttl).Err()
 }
 
+// GetBytes returns a raw cache value (empty slice + nil when key is missing).
+func (c *Client) GetBytes(ctx context.Context, key string) ([]byte, error) {
+	data, err := c.rdb.Get(ctx, key).Bytes()
+	if err == redis.Nil {
+		return nil, nil
+	}
+	return data, err
+}
+
+// SetBytes stores a raw cache value with TTL.
+func (c *Client) SetBytes(ctx context.Context, key string, value []byte, ttl time.Duration) error {
+	return c.rdb.Set(ctx, key, value, ttl).Err()
+}
+
 // PublishAircrafts publish at Pub/Sub channel
 func (c *Client) PublishAircrafts(ctx context.Context, aircrafts []*flight.Aircraft) error {
 	data, err := json.Marshal(aircrafts)

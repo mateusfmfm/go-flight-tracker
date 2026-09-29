@@ -1,11 +1,13 @@
 package graph
 
 import (
+	"go-flight-tracker/internal/photos"
 	"go-flight-tracker/internal/redis"
 	"go-flight-tracker/internal/store"
 )
 
 type Resolver struct {
-	Store       *store.AircraftStore
-	RedisClient *redis.Client
+	Store         *store.AircraftStore
+	RedisClient   *redis.Client
+	PhotosService *photos.Service
 }
